@@ -1,18 +1,35 @@
 import {useSyncExternalStore} from "react";
 
 function createStore() {
-  let width = window.innerWidth;
-  let height = window.innerHeight;
+  let width;
+  let height;
+
+  const listeners = new Set();
+
+  const resizeEventListener = () => {
+    width = window.innerWidth;
+    height = window.innerHeight;
+
+    for (const listener of listeners) {
+      listener();
+    }
+  };
 
   const subscribe = (callback) => {
-    const listener = () => {
+    listeners.add(callback);
+
+    if (listeners.size === 1) {
       width = window.innerWidth;
       height = window.innerHeight;
-      callback();
-    };
+      window.addEventListener("resize", resizeEventListener);
+    }
 
-    window.addEventListener("resize", listener);
-    return () => window.removeEventListener("resize", listener);
+    return () => {
+      listeners.delete(callback);
+      if (listeners.size === 0) {
+        window.removeEventListener("resize", resizeEventListener);
+      }
+    };
   };
 
   const getState = () => ({width, height});
