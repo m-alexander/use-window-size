@@ -1,14 +1,16 @@
 import {useSyncExternalStore} from "react";
 
 function createStore() {
-  let width;
-  let height;
+  const state = {
+    width: 0,
+    height: 0
+  };
 
   const listeners = new Set();
 
   const resizeEventListener = () => {
-    width = window.innerWidth;
-    height = window.innerHeight;
+    state.width = window.innerWidth;
+    state.height = window.innerHeight;
 
     for (const listener of listeners) {
       listener();
@@ -19,8 +21,8 @@ function createStore() {
     listeners.add(callback);
 
     if (listeners.size === 1) {
-      width = window.innerWidth;
-      height = window.innerHeight;
+      state.width = window.innerWidth;
+      state.height = window.innerHeight;
       window.addEventListener("resize", resizeEventListener);
     }
 
@@ -32,9 +34,9 @@ function createStore() {
     };
   };
 
-  const getState = () => ({width, height});
+  const getState = () => state;
 
-  return {subscribe, getState};
+  return { subscribe, getState };
 }
 
 const store = createStore();
