@@ -12,9 +12,7 @@ function createStore() {
     state.width = window.innerWidth;
     state.height = window.innerHeight;
 
-    for (const listener of listeners) {
-      listener();
-    }
+    listeners.forEach(listener => listener())
   };
 
   const subscribe = (callback) => {
